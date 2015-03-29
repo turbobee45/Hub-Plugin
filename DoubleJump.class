@@ -1,0 +1,65 @@
+package me.unrealnetwork.doublejump;
+
+import org.bukkit.Effect;
+import org.bukkit.GameMode;
+import org.bukkit.Material;
+import org.bukkit.block.BlockFace;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerToggleFlightEvent;
+
+public class DoubleJump implements CommandExecutor, Listener{
+
+	public me.unrealnetwork.main.Main plugin;
+
+	public DoubleJump(me.unrealnetwork.main.Main instance) {
+		plugin = instance;
+	}
+	
+	@EventHandler
+	public void onPlayerJoin(PlayerJoinEvent e) {
+		Player p = e.getPlayer();
+		p.setAllowFlight(true);
+		p.setFlying(false);
+	}
+
+	@SuppressWarnings("deprecation")
+	@EventHandler
+	public void onPlayerFly(PlayerToggleFlightEvent e) {
+		Player p = e.getPlayer();
+		if(p.hasPermission("doublejump.enable")) {
+			if(p.getGameMode() != GameMode.CREATIVE) {
+				e.setCancelled(true);
+				p.setAllowFlight(false);
+				p.setFlying(false);
+				p.setVelocity(p.getLocation().getDirection().multiply(2.00).setY(0.9D));
+				p.playEffect(p.getLocation(), Effect.BLAZE_SHOOT, 15);
+				}
+		} else {
+			e.setCancelled(true);
+		}
+	}
+
+	@EventHandler
+	public void onPlayerMove(PlayerMoveEvent e) {
+		Player p = e.getPlayer();
+		if(e.getPlayer().getGameMode() != GameMode.CREATIVE) {
+			if(p.getLocation().getBlock().getRelative(BlockFace.DOWN).getType() != Material.AIR) {
+				p.setAllowFlight(true);
+			}
+		}
+	}
+
+	@Override
+	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel,
+			String[] args) {
+		return false;
+	}
+
+}
