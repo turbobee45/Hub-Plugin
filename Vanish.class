@@ -1,0 +1,49 @@
+package me.unrealnetwork.vanish;
+
+import java.util.ArrayList;
+
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.event.Listener;
+
+public class Vanish implements Listener, CommandExecutor{
+
+	public static ArrayList<Player> vanished = new ArrayList<Player>();
+
+	@SuppressWarnings("deprecation")
+	public boolean onCommand(CommandSender sender, Command cmd,
+			String commandLabel, String[] args) {
+		Player p = (Player) sender;
+		if (!(sender instanceof Player)) {
+			sender.sendMessage(ChatColor.RED + "You cannot vanish!");
+			return true;
+		}
+		if (commandLabel.equalsIgnoreCase("vanish")) {
+			if (p.hasPermission("vanish.allow")) {
+				if (!vanished.contains(p)) {
+					for (Player pl : Bukkit.getServer().getOnlinePlayers()) {
+						pl.hidePlayer(p);
+					}
+					vanished.add(p);
+					p.sendMessage(ChatColor.GREEN + "You have dissapeared!");
+					return true;
+				}
+				else{
+					for (Player pl : Bukkit.getServer().getOnlinePlayers()) {
+						pl.showPlayer(p);
+					}
+					vanished.remove(p);
+					p.sendMessage(ChatColor.GREEN + "You have re-appeared");
+					return true;
+				}
+			}
+		}
+		return true;
+
+	}
+	
+}
