@@ -1,0 +1,33 @@
+package me.unrealnetwork.main;
+
+import me.unrealnetwork.doublejump.DoubleJump;
+
+import org.bukkit.Bukkit;
+import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.java.JavaPlugin;
+
+public class Main extends JavaPlugin{
+	
+	public static Main plugin;
+	public static Main instance;
+	public void onEnable(){
+		commands();
+		Events();
+		instance = this;
+	}
+	public void onDisable(){
+		instance = null;
+	}
+	public void commands(){
+		
+	}
+	public Main getInstance(){
+		return instance;
+	}
+	@SuppressWarnings("unused")
+	public void Events(){
+		PluginManager pm = getServer().getPluginManager();
+		Bukkit.getServer().getPluginManager().registerEvents(new DoubleJump(null) , this);
+		Bukkit.getServer().getPluginManager().registerEvents(new me.unrealnetwork.vanish.Events(null), this);
+	}
+}
