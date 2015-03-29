@@ -1,0 +1,80 @@
+package me.unrealnetwork.vanish;
+
+import me.unrealnetwork.main.Main;
+
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
+public class Events implements Listener {
+
+	public static Main plugin;
+	public static Main instance;
+
+	public Events(Main instance) {
+		plugin = instance;
+	}
+
+	@EventHandler
+	public void onPlayerJoin(PlayerJoinEvent e) {
+		for (Player p : Vanish.vanished) {
+			e.getPlayer().hidePlayer(p);
+		}
+	}
+
+	@SuppressWarnings("unused")
+	@EventHandler
+	public void onPlayerLeave(PlayerQuitEvent e) {
+		Player p = e.getPlayer();
+		Vanish.vanished.remove(e.getPlayer());
+		ItemStack torch = new ItemStack(Material.TORCH);
+		ItemMeta torchmeta = torch.getItemMeta();
+		p.getInventory().removeItem(torch);
+	}
+
+	@EventHandler
+	public void torchGiver(PlayerJoinEvent e) {
+		Player p = e.getPlayer();
+		p.getInventory().clear();
+		ItemStack torch = new ItemStack(Material.TORCH);
+		ItemMeta torchmeta = torch.getItemMeta();
+		torchmeta.setDisplayName(ChatColor.BOLD + "Vanish Tool");
+		torch.setItemMeta(torchmeta);
+		p.getInventory().addItem(torch);
+		p.updateInventory();
+	}
+
+	@EventHandler
+	private void moveCancel(InventoryClickEvent e) {
+		e.setCancelled(true);
+	}
+
+	@EventHandler
+	private void throwCancel(PlayerDropItemEvent e) {
+		e.setCancelled(true);
+	}
+
+	@SuppressWarnings("static-access")
+	@EventHandler
+	public void vanishCommand(PlayerInteractEvent e) {
+		Action a = e.getAction();
+		Player p = e.getPlayer();
+		if (a.RIGHT_CLICK_AIR != null ){
+			if (e.getItem().getItemMeta().getDisplayName()
+					.equals(ChatColor.BOLD + "Vanish Tool")) {
+				Bukkit.dispatchCommand(p, "vanish");
+			}
+		}
+	}
+}
